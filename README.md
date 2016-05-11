@@ -1,8 +1,13 @@
-Session Middleware for [grest](https://github.com/GRest-toolkit/grest)
-[![GoDoc](https://godoc.org/github.com/GRest-toolkit/session?status.svg)](https://godoc.org/github.com/GRest-toolkit/session)
+Session Middleware for [restgo](https://github.com/restgo/restgo)
+[![GoDoc](https://godoc.org/github.com/restgo/session?status.svg)](https://godoc.org/github.com/restgo/session)
 
 This package only contains cookie session store, you need implement other store if you want it.
 Session store must implements `Store` interface.
+
+## Install
+```
+    go get github.com/restgo/session
+```
 
 ## Exampe `example/app.go`
 ```go
