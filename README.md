@@ -1,5 +1,5 @@
-Session Middleware for [grest](https://github.com/fxding/grest)
-[![GoDoc](https://godoc.org/github.com/fxding/session?status.svg)](https://godoc.org/github.com/fxding/session)
+Session Middleware for [grest](https://github.com/GRest-toolkit/grest)
+[![GoDoc](https://godoc.org/github.com/GRest-toolkit/session?status.svg)](https://godoc.org/github.com/GRest-toolkit/session)
 
 This package only contains cookie session store, you need implement other store if you want it.
 Session store must implements `Store` interface.
