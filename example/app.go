@@ -3,9 +3,9 @@ package main
 import (
 )
 import (
-	"github.com/fxding/grest"
+	"github.com/restgo/restgo"
 	"github.com/valyala/fasthttp"
-	"github.com/fxding/session"
+	"github.com/restgo/session"
 	"flag"
 	"fmt"
 	"time"
@@ -13,7 +13,7 @@ import (
 
 func main() {
 
-	router := grest.NewRouter()
+	router := restgo.NewRouter()
 
 	sessionOpts := `{
 		"Secret"     :"secret",
@@ -28,7 +28,7 @@ func main() {
 
 	router.Use("/", session.NewSessionManager(session.NewCookieSessionStore(), sessionOpts))
 
-	router.GET("/about", func(ctx *fasthttp.RequestCtx, next grest.Next) {
+	router.GET("/about", func(ctx *fasthttp.RequestCtx, next restgo.Next) {
 		s := ctx.UserValue("session")
 		session, _ := s.(*session.Session)
 		if _, ok := session.Values["time"]; ok {
@@ -37,7 +37,7 @@ func main() {
 			session.Values["time"] = time.Now().Format("2006-01-02 15:04:05")
 		}
 
-		grest.ServeTEXT(ctx, "About", 200)
+		restgo.ServeTEXT(ctx, "About", 200)
 	})
 
 

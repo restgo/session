@@ -23,7 +23,7 @@ Session store must implements `Store` interface.
     
     router.Use("/", session.NewSessionManager(session.NewCookieSessionStore(), sessionOpts))
     
-    router.GET("/about", func(ctx *fasthttp.RequestCtx, next grest.Next) {
+    router.GET("/about", func(ctx *fasthttp.RequestCtx, next restgo.Next) {
         s := ctx.UserValue("session")
         session, _ := s.(*session.Session)
         if _, ok := session.Values["time"]; ok {
@@ -31,6 +31,6 @@ Session store must implements `Store` interface.
         } else {
             session.Values["time"] = time.Now().Format("2006-01-02 15:04:05")
         }
-        grest.ServeTEXT(ctx, "About", 200)
+        restgo.ServeTEXT(ctx, "About", 200)
     })
 ```

@@ -2,8 +2,8 @@ package session
 
 import (
 	"github.com/valyala/fasthttp"
-	"github.com/fxding/grest"
-	"github.com/fxding/jsonhelper"
+	"github.com/restgo/restgo"
+	"github.com/restgo/jsonhelper"
 	"time"
 	"github.com/gorilla/securecookie"
 	"encoding/json"
@@ -34,7 +34,7 @@ type SessionManager struct {
 
 // router.Use("/", NewSessionManager(newCookieStore(cookieStoreConfig)))
 // name: name for session id in cookie, default sid
-func NewSessionManager(store Store, options string) grest.HTTPHandler {
+func NewSessionManager(store Store, options string) restgo.HTTPHandler {
 	// init store
 	err := store.Init(options)
 	if err != nil {
@@ -48,7 +48,7 @@ func NewSessionManager(store Store, options string) grest.HTTPHandler {
 	manager.initSecret()
 
 	// use store interface to manager session
-	return func(ctx *fasthttp.RequestCtx, next grest.Next) {
+	return func(ctx *fasthttp.RequestCtx, next restgo.Next) {
 		// 1. get session id from cookie
 		sid := manager.getSidFromCookie(ctx)
 
