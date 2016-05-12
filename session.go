@@ -17,11 +17,11 @@ type (
 	}
 )
 
-func newSession(store Store, sid string) *Session {
+func NewSession(store Store, sid string, values map[string]interface{}) *Session {
 	return &Session{
 		Sid: sid,
 		store: store,
-		Values: make(map[string]interface{}),
+		Values: values,
 	}
 }
 
@@ -32,7 +32,7 @@ type SessionManager struct {
 }
 
 
-// router.Use("/", NewSessionManager(newCookieStore(cookieStoreConfig)))
+// router.Use("/", NewSessionManager(newCookieStore(cookieStoreConfig), sessionManagerConfig))
 // name: name for session id in cookie, default sid
 func NewSessionManager(store Store, options string) restgo.HTTPHandler {
 	// init store
@@ -73,7 +73,7 @@ func NewSessionManager(store Store, options string) restgo.HTTPHandler {
 					return
 				}
 
-				manager.setCookie(ctx, sid)
+				manager.setCookie(ctx, sid) // must use sid returned from store.Save()
 			}
 		}()
 
@@ -98,21 +98,22 @@ func (this *SessionManager)getSidFromCookie(ctx *fasthttp.RequestCtx) interface{
 	encrypted := this.options.Bool("EncyptCookie", false)
 	if len(sessionData) != 0 {
 		if this.store.StoreName() != "cookie" {
-			var values string = ""
+			var sid string = ""
 			if encrypted == true {
-				this.secureCookie.Decode(cookieName, string(sessionData), &values)
+				this.secureCookie.Decode(cookieName, string(sessionData), &sid)
 			} else {
-				values = string(sessionData);
+				sid = string(sessionData);
 			}
-			return values
+			return sid
 		} else {
-			var values map[string]interface{} = make(map[string]interface{})
+			// for cookie store, the value of sid is session values
+			var sid map[string]interface{} = make(map[string]interface{})
 			if encrypted == true {
-				this.secureCookie.Decode(cookieName, string(sessionData), &values)
+				this.secureCookie.Decode(cookieName, string(sessionData), &sid)
 			} else {
-				json.Unmarshal(sessionData, &values)
+				json.Unmarshal(sessionData, &sid)
 			}
-			return values
+			return sid
 		}
 	}
 
@@ -128,9 +129,13 @@ func (this *SessionManager)setCookie(ctx *fasthttp.RequestCtx, sid interface{}) 
 	if encrypted == true {
 		sessionId, err = this.secureCookie.Encode(cookieName, sid)
 	} else {
-		var tmpId []byte
-		tmpId, err = json.Marshal(sid)
-		sessionId = string(tmpId)
+		if tmpId, ok := sid.(string); ok {
+			sessionId = tmpId
+		} else {
+			var tmpId []byte
+			tmpId, err = json.Marshal(sid)
+			sessionId = string(tmpId)
+		}
 	}
 
 	if err == nil {

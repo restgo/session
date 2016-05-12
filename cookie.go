@@ -20,7 +20,7 @@ func (this *CookieStore)StoreName() string {
 
 // for cookie store, sid will be session value
 func (this *CookieStore)Get(sid interface{}) (*Session, error) {
-	session := newSession(this, "") // session id is empty for cookie store
+	session := NewSession(this, "", make(map[string]interface{})) // session id is empty for cookie store
 
 	if values, ok := sid.(map[string]interface{}); ok {
 		session.Values = values

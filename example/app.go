@@ -1,8 +1,6 @@
 package main
 
 import (
-)
-import (
 	"github.com/restgo/restgo"
 	"github.com/valyala/fasthttp"
 	"github.com/restgo/session"
