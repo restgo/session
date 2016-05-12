@@ -1,1 +1,5 @@
+/vendor
+/glide.lock
+/example/vendor
+/example/glide.lock
 .idea

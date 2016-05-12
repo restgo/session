@@ -1,0 +1,4 @@
+package: github.com/restgo/session/example
+import:
+- package: github.com/restgo/restgo
+- package: github.com/restgo/session

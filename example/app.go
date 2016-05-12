@@ -1,17 +1,15 @@
 package main
 
 import (
-	"github.com/restgo/restgo"
-	"github.com/valyala/fasthttp"
-	"github.com/restgo/session"
-	"flag"
 	"fmt"
+	"github.com/restgo/restgo"
+	"github.com/restgo/session"
 	"time"
 )
 
 func main() {
 
-	router := restgo.NewRouter()
+	app := restgo.App()
 
 	sessionOpts := `{
 		"Secret"     :"secret",
@@ -23,10 +21,9 @@ func main() {
 		"EncyptCookie": false
 	}`
 
+	app.Use(session.NewSessionManager(session.NewCookieSessionStore(), sessionOpts))
 
-	router.Use("/", session.NewSessionManager(session.NewCookieSessionStore(), sessionOpts))
-
-	router.GET("/about", func(ctx *fasthttp.RequestCtx, next restgo.Next) {
+	app.GET("/about", func(ctx *restgo.Context, next restgo.Next) {
 		s := ctx.UserValue("session")
 		session, _ := s.(*session.Session)
 		if _, ok := session.Values["time"]; ok {
@@ -35,11 +32,8 @@ func main() {
 			session.Values["time"] = time.Now().Format("2006-01-02 15:04:05")
 		}
 
-		restgo.ServeTEXT(ctx, "About", 200)
+		ctx.ServeText(200, "About")
 	})
 
-
-	var addr = flag.String("addr", ":8080", "TCP address to listen to")
-	fasthttp.ListenAndServe(*addr, router.FastHttpHandler)
-
+	app.Run()
 }
