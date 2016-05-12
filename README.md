@@ -25,9 +25,9 @@ Session store must implements `Store` interface.
         "EncyptCookie": false
     }`
     
-    router.Use(session.NewSessionManager(session.NewCookieSessionStore(), sessionOpts))
+    app.Use(session.NewSessionManager(session.NewCookieSessionStore(), sessionOpts))
     
-    router.GET("/about", func(ctx *restgo.Context, next restgo.Next) {
+    app.GET("/about", func(ctx *restgo.Context, next restgo.Next) {
         s := ctx.UserValue("session")
         session, _ := s.(*session.Session)
         if _, ok := session.Values["time"]; ok {
