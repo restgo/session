@@ -1,12 +1,12 @@
 package session
 
 import (
-	"github.com/valyala/fasthttp"
-	"github.com/restgo/restgo"
-	"github.com/restgo/jsonhelper"
-	"time"
-	"github.com/gorilla/securecookie"
 	"encoding/json"
+	"github.com/gorilla/securecookie"
+	"github.com/restgo/jsonhelper"
+	"github.com/restgo/restgo"
+	"github.com/valyala/fasthttp"
+	"time"
 )
 
 type (
@@ -19,8 +19,8 @@ type (
 
 func NewSession(store Store, sid string, values map[string]interface{}) *Session {
 	return &Session{
-		Sid: sid,
-		store: store,
+		Sid:    sid,
+		store:  store,
 		Values: values,
 	}
 }
@@ -30,7 +30,6 @@ type SessionManager struct {
 	secureCookie *securecookie.SecureCookie
 	options      jsonhelper.JsonHelper
 }
-
 
 // router.Use("/", NewSessionManager(newCookieStore(cookieStoreConfig), sessionManagerConfig))
 // name: name for session id in cookie, default sid
@@ -42,18 +41,18 @@ func NewSessionManager(store Store, options string) restgo.HTTPHandler {
 	}
 
 	manager := &SessionManager{
-		store: store,
-		options : jsonhelper.NewJsonHelper([]byte(options)),
+		store:   store,
+		options: jsonhelper.NewJsonHelper([]byte(options)),
 	}
 	manager.initSecret()
 
 	// use store interface to manager session
-	return func(ctx *fasthttp.RequestCtx, next restgo.Next) {
+	return func(ctx *restgo.Context, next restgo.Next) {
 		// 1. get session id from cookie
 		sid := manager.getSidFromCookie(ctx)
 
 		// 2. get session by id, or create one
-		session, err := store.Get(sid);
+		session, err := store.Get(sid)
 
 		if err == nil {
 			//3. set session data to requestCtx by ctx.SetUserValue
@@ -82,7 +81,7 @@ func NewSessionManager(store Store, options string) restgo.HTTPHandler {
 	}
 }
 
-func (this *SessionManager)initSecret() {
+func (this *SessionManager) initSecret() {
 	// Hash keys should be at least 32 bytes long
 	var hashKey = securecookie.GenerateRandomKey(32)
 	// Block keys should be 16 bytes (AES-128) or 32 bytes (AES-256) long.
@@ -91,7 +90,7 @@ func (this *SessionManager)initSecret() {
 	this.secureCookie = securecookie.New(hashKey, blockKey)
 }
 
-func (this *SessionManager)getSidFromCookie(ctx *fasthttp.RequestCtx) interface{} {
+func (this *SessionManager) getSidFromCookie(ctx *restgo.Context) interface{} {
 	cookieName := this.options.String("CookieName", "session")
 	sessionData := ctx.Request.Header.Cookie(cookieName)
 
@@ -102,7 +101,7 @@ func (this *SessionManager)getSidFromCookie(ctx *fasthttp.RequestCtx) interface{
 			if encrypted == true {
 				this.secureCookie.Decode(cookieName, string(sessionData), &sid)
 			} else {
-				sid = string(sessionData);
+				sid = string(sessionData)
 			}
 			return sid
 		} else {
@@ -120,7 +119,7 @@ func (this *SessionManager)getSidFromCookie(ctx *fasthttp.RequestCtx) interface{
 	return ""
 }
 
-func (this *SessionManager)setCookie(ctx *fasthttp.RequestCtx, sid interface{}) {
+func (this *SessionManager) setCookie(ctx *restgo.Context, sid interface{}) {
 	cookieName := this.options.String("CookieName", "session")
 	var sessionId string
 	var err error
@@ -152,5 +151,3 @@ func (this *SessionManager)setCookie(ctx *fasthttp.RequestCtx, sid interface{}) 
 		ctx.Response.Header.SetCookie(cookie)
 	}
 }
-
-

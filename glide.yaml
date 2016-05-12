@@ -1,0 +1,6 @@
+package: github.com/restgo/session
+import:
+- package: github.com/gorilla/securecookie
+- package: github.com/restgo/jsonhelper
+- package: github.com/restgo/restgo
+- package: github.com/valyala/fasthttp
