@@ -9,6 +9,10 @@ Session store must implements `Store` interface.
     go get github.com/restgo/session
 ```
 
+## Session Store
+1. Cookie Store (included in this package)
+2. [Mongo Store](https://github.com/restgo/session-mongo)
+
 ## Exampe `example/app.go`
 ```go
     sessionOpts := `{
